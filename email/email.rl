@@ -10,15 +10,11 @@ func FindEmails(data []byte) []string {
 	_ = eof
 
 	%%{
-		action mark { mark = fpc }
-		action captureEmail { emails = append(emails, string(data[mark:p])) }
+		action mark { mark = p }
+		action add { emails = append(emails, string(data[mark:p])) }
 
-		head = alnum | '_' | '.' | '+' | '-';
-		org = alnum | '-';
-		com = alnum | '-' | '.';
-
-		emailFormat = head+ >mark '@' org+ '.' com+ %captureEmail;
-		main := emailFormat;
+		email = space* (alnum+ >mark ('.' | '+' | '_' | '-')? alnum+ '@' alnum+ . '.' . alnum+) %add . space+ >/add ;
+		main := email+;
 
 
 		write init;
